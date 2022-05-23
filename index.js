@@ -13,14 +13,29 @@ app.use(cors());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.4dzbu.mongodb.net/?retryWrites=true&w=majority`;
 
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+const client = new MongoClient(uri);
 
-client.connect(err => {
-  const collection = client.db("test").collection("devices");
-  // perform actions on the collection object
-  client.close();
-});
+const partsCollection = client.db('car-parts').collection('parts-collection');
 
+
+
+async function run() {
+  try {
+    await client.connect();
+
+    // get all parts
+    app.get('/parts', async (req, res) => {
+      const result = await partsCollection.find({}).toArray();
+      res.send(result);
+
+    })
+
+  }
+  finally {
+
+  }
+}
+run().catch(e => console.log(e.message))
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
