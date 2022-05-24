@@ -15,7 +15,7 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 
 const client = new MongoClient(uri);
 
-const partsCollection = client.db('car-parts').collection('parts-collection');
+const partsCollection = client.db('parts-db').collection('parts-collection');
 
 
 
@@ -27,6 +27,8 @@ async function run() {
     app.get('/parts', async (req, res) => {
       const result = await partsCollection.find({}).toArray();
       res.send(result);
+
+
 
     })
 
