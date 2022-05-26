@@ -50,11 +50,19 @@ async function run() {
       res.send(result)
     });
 
+    // get all orders 
     app.get('/orders', async (req, res) => {
       const email = req.headers.email;
       const result = await ordersCollection.find({ email }).toArray();
       console.log(result);
       res.send(result)
+    });
+
+    // delete order
+    app.delete('/deleteorder/:id', async (req, res) => {
+      const id = ObjectId(req.params.id);
+      const result = await ordersCollection.deleteOne({ _id: id });
+      res.send(result);
     })
 
   }
