@@ -67,12 +67,18 @@ async function run() {
     })
 
     // add review
-    app.post('/addreview', async (req, res) => {
+    app.put('/addreview', async (req, res) => {
       const email = req.headers.email;
       const review = req.body;
-      const result = await reviewsCollection.insertOne(review);
+      const doc = {
+        $set: review
+      }
+      const result = await reviewsCollection.updateOne({ email }, doc, { upsert: true });
       res.send(result);
-    })
+    });
+
+    // get all reviews
+    // app.get
 
   }
   finally {
