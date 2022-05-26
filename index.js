@@ -17,6 +17,7 @@ const client = new MongoClient(uri);
 
 const partsCollection = client.db('parts-db').collection('parts-collection');
 const ordersCollection = client.db('orders-db').collection('orders-collection');
+const reviewsCollection = client.db('reviews-db').collection('reviews-collection');
 
 
 
@@ -62,6 +63,14 @@ async function run() {
     app.delete('/deleteorder/:id', async (req, res) => {
       const id = ObjectId(req.params.id);
       const result = await ordersCollection.deleteOne({ _id: id });
+      res.send(result);
+    })
+
+    // add review
+    app.post('/addreview', async (req, res) => {
+      const email = req.headers.email;
+      const review = req.body;
+      const result = await reviewsCollection.insertOne(review);
       res.send(result);
     })
 
