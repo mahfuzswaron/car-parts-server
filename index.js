@@ -16,6 +16,7 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 const client = new MongoClient(uri);
 
 const partsCollection = client.db('parts-db').collection('parts-collection');
+const ordersCollection = client.db('orders-db').collection('orders-collection');
 
 
 
@@ -27,12 +28,25 @@ async function run() {
     app.get('/parts', async (req, res) => {
       const result = await partsCollection.find({}).toArray();
       res.send(result);
-    })
+    });
 
     // get single product
     app.get('/parts/:id', async (req, res) => {
       const id = ObjectId(req.params.id);
       const result = await partsCollection.findOne({ _id: id });
+      res.send(result)
+    });
+
+    // place an order 
+    app.put('/order', async (req, res) => {
+      // const id = ObjectId(req.params.id);
+      const email = req.headers.email;
+      const order = req.body;
+      const productId = order.productId;
+      const doc = {
+        $set: order
+      }
+      const result = await ordersCollection.updateOne({ email, productId }, doc, { upsert: true });
       res.send(result)
     })
 
