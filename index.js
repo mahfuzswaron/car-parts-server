@@ -78,7 +78,10 @@ async function run() {
     });
 
     // get all reviews
-    // app.get
+    app.get('/reviews', async (req, res) => {
+      const result = await reviewsCollection.find({}).toArray();
+      res.send(result);
+    })
 
   }
   finally {
