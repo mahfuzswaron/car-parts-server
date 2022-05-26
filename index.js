@@ -48,6 +48,13 @@ async function run() {
       }
       const result = await ordersCollection.updateOne({ email, productId }, doc, { upsert: true });
       res.send(result)
+    });
+
+    app.get('/orders', async (req, res) => {
+      const email = req.headers.email;
+      const result = await ordersCollection.find({ email }).toArray();
+      console.log(result);
+      res.send(result)
     })
 
   }
