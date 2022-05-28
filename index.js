@@ -105,6 +105,14 @@ async function run() {
       res.send(result)
     });
 
+    // get single user 
+    app.get('/users/:email', async (req, res) => {
+      const email = req.params.email;
+      // console.log(email);
+      const result = await usersCollection.findOne({ email: email })
+      res.send(result)
+    });
+
 
 
 
