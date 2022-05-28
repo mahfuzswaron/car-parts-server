@@ -12,6 +12,7 @@ app.use(cors());
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.4dzbu.mongodb.net/?retryWrites=true&w=majority`;
+const stripe = require("stripe")('sk_test_51L43pvI3zaZwZcFaigeBxW4X2pVMxoJ0lO4LMu5DQNOs1o5VuyKZ2fc5vHCGrjIUbkmJFuhDfNjWpn6DYDlLblY300XkaojJ8O');
 
 const client = new MongoClient(uri);
 
@@ -19,8 +20,11 @@ const partsCollection = client.db('parts-db').collection('parts-collection');
 const ordersCollection = client.db('orders-db').collection('orders-collection');
 const reviewsCollection = client.db('reviews-db').collection('reviews-collection');
 const profilesCollection = client.db('profiles-db').collection('profiles-collection');
+const usersCollection = client.db('users-db').collection('profiles-collection');
 
-
+const calculateOrderAmount = amount => {
+  return amount * 100;
+}
 
 async function run() {
   try {
@@ -85,15 +89,45 @@ async function run() {
     });
 
     // put profiles
-    app.put('/profiles', async (req, res) => {
+    app.put('/users', async (req, res) => {
       const email = req.headers.email;
-      const profile = req.body;
+      const user = req.body;
       const doc = {
-        $set: profile
+        $set: user
       }
-      const result = await profilesCollection.updateOne({ email }, doc, { upsert: true });
+      const result = await usersCollection.updateOne({ email }, doc, { upsert: true });
       res.send(result);
+    });
+
+    // get all users
+    app.get('/users', async (req, res) => {
+      const result = await usersCollection.find({}).toArray();
+      res.send(result)
     })
+
+
+
+
+
+
+
+
+    // payment route 
+    app.post("/create-payment-intent", async (req, res) => {
+      const product = req.body;
+      const amount = product.price;
+
+      // Create a PaymentIntent with the order amount and currency
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: calculateOrderAmount(amount),
+        currency: "usd",
+        automatic_payment_methods: ["Card"]
+      });
+      res.send({
+        clientSecret: paymentIntent.client_secret
+      })
+    });
+
 
   }
   finally {
