@@ -18,6 +18,7 @@ const client = new MongoClient(uri);
 const partsCollection = client.db('parts-db').collection('parts-collection');
 const ordersCollection = client.db('orders-db').collection('orders-collection');
 const reviewsCollection = client.db('reviews-db').collection('reviews-collection');
+const profilesCollection = client.db('profiles-db').collection('profiles-collection');
 
 
 
@@ -80,6 +81,17 @@ async function run() {
     // get all reviews
     app.get('/reviews', async (req, res) => {
       const result = await reviewsCollection.find({}).toArray();
+      res.send(result);
+    });
+
+    // put profiles
+    app.put('/profiles', async (req, res) => {
+      const email = req.headers.email;
+      const profile = req.body;
+      const doc = {
+        $set: profile
+      }
+      const result = await profilesCollection.updateOne({ email }, doc, { upsert: true });
       res.send(result);
     })
 
