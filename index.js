@@ -77,10 +77,29 @@ async function run() {
       res.send(result)
     });
 
+    // get all order for admin
+    app.get('/allorders', async (req, res) => {
+      const email = req.headers.email;
+      const result = await ordersCollection.find({}).toArray();
+      res.send(result)
+    });
+
     // delete order
     app.delete('/deleteorder/:id', async (req, res) => {
       const id = ObjectId(req.params.id);
       const result = await ordersCollection.deleteOne({ _id: id });
+      res.send(result);
+    });
+
+    // ship order 
+    app.put('/orders/:id', async (req, res) => {
+      const id = ObjectId(req.params.id);
+      const doc = {
+        $set: {
+          status: 'shipped'
+        }
+      }
+      const result = await ordersCollection.updateOne({ _id: id }, doc);
       res.send(result);
     })
 
