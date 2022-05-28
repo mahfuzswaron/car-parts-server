@@ -30,7 +30,7 @@ async function run() {
   try {
     await client.connect();
 
-    // get all parts
+    // get all products
     app.get('/parts', async (req, res) => {
       const result = await partsCollection.find({}).toArray();
       res.send(result);
@@ -43,9 +43,22 @@ async function run() {
       res.send(result)
     });
 
+    // add product
+    app.post('/addpart', async (req, res) => {
+      const product = req.body;
+      const result = partsCollection.insertOne(product);
+      res.send(result);
+    });
+
+    // delete product 
+    app.delete('/deleteproduct/:id', async (req, res) => {
+      const id = ObjectId(req.params.id);
+      const result = await partsCollection.deleteOne({ _id: id });
+      res.send(result);
+    })
+
     // place an order 
     app.put('/order', async (req, res) => {
-      // const id = ObjectId(req.params.id);
       const email = req.headers.email;
       const order = req.body;
       const productId = order.productId;
@@ -108,7 +121,6 @@ async function run() {
     // get single user 
     app.get('/users/:email', async (req, res) => {
       const email = req.params.email;
-      // console.log(email);
       const result = await usersCollection.findOne({ email: email })
       res.send(result)
     });
