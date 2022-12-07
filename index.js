@@ -144,15 +144,6 @@ async function run() {
       res.send(result)
     });
 
-
-
-
-
-
-
-
-
-
     // payment route 
     app.post("/create-payment-intent", async (req, res) => {
       const product = req.body;
